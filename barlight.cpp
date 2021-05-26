@@ -6,14 +6,14 @@
 #include "barlight.h"
 #include "rpi_ws281x/ws2811.h"
 
-#define LED_COUNT1		30
-#define LED_COUNT2		30
+#define LED_COUNT1		150
+#define LED_COUNT2		75
 
 #define TARGET_FREQ             WS2811_TARGET_FREQ
 #define GPIO_PIN1               18
 #define GPIO_PIN2               13
 #define WS2811_DMA              10
-#define MAX_BRIGHTNESS		255
+#define MAX_BRIGHTNESS		128
 
 
 
@@ -32,6 +32,7 @@ BarLightStrip::~BarLightStrip()
 
 bool BarLightStrip::init(double gamma)
 {
+	fprintf(stderr, "INIT TEST\n");
 	_ws2811 = (ws2811_t *) malloc(sizeof(ws2811_t));
 	memset(_ws2811, 0, sizeof(ws2811_t));
 
@@ -102,7 +103,8 @@ double BarLightStrip::gamma() const
 void BarLightStrip::setColor(int idx, uint8_t r, uint8_t g, uint8_t  b)
 {
 	int chanIdx, ledIdx;
-	mapIndex(idx, chanIdx, ledIdx);
+	// 
+	mapIndex(idx, ledIdx, chanIdx);
 
 	_ws2811->channel[chanIdx].leds[ledIdx] = ((r & 0x0ff) << 16) | ((g & 0x0ff) << 8) | (b & 0x0ff);
 }
@@ -136,7 +138,7 @@ void BarLightStrip::mapIndex(int idx, int& ledIdx, int& chanIdx)
 		chanIdx = 0;
 		ledIdx  = LED_COUNT1 - idx - 1;
 	} else {
-		chanIdx = 0;
+		chanIdx = 1;
 		ledIdx  = idx - LED_COUNT1;
 	}
 }

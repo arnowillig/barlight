@@ -11,7 +11,7 @@ INCLUDES += -I pistache/include/
 
 CFLAGS += -Wfatal-errors -Wno-deprecated-declarations
 
-TARGET = ambipi
+TARGET = barlight
 
 ifneq ("$(wildcard /opt/vc/lib/libbcm_host.so)","")
 	HAVE_DISPMANX = 1

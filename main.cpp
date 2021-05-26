@@ -29,11 +29,13 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	barLightStrip.setColor(255, 255, 255);
+	barLightStrip.setColor(255, 128, 64);
 	// Main loop
+	int i=0;
 	while (running) {
+		// barLightStrip.setRainbowColor(i++);
 		barLightStrip.render();
-		usleep(40*1000);
+		usleep(20*1000);
 	}
 	return 0;
 }
