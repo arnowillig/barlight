@@ -1,10 +1,12 @@
 #include <stdio.h>
-#include <signal.h>
+#include <stdlib.h>
 #include <unistd.h>
+#include <signal.h>
+#include <time.h>
 #include "barlight.h"
 
 static bool running = true;
-static unsigned int userCounter = 0;
+static unsigned int userCounter = 4;
 
 static void signalHandler(int signo)
 {
@@ -27,37 +29,63 @@ int main(int argc, char** argv)
 	// Initialize abort handlers
 	signal(SIGINT,  signalHandler);
 	signal(SIGTERM, signalHandler);
+	signal(SIGUSR1, signalHandler);
+	signal(SIGUSR2, signalHandler);
+	
+	// Initialize random generator
+	srand(time(NULL));
 
 
 	// Creating LightStrip object
 	LightStrip lightStrip;
 
-	lightStrip.addSegment(new LightStripSegment( 75, 50, 1)); // Seite
-	lightStrip.addSegment(new LightStripSegment( 50, 40, 1)); // Box schmale Seite
-	lightStrip.addSegment(new LightStripSegment( 40, 10, 1)); // Box breite Seite
-	lightStrip.addSegment(new LightStripSegment( 12,100, 0)); // Hinten
-	lightStrip.addSegment(new LightStripSegment(100,150, 0)); // Bar unten
-	// lightStrip.addSegment(new LightStripSegment(150,200, 0)); // Bar oben
+	int bri = 128; // 48
+	lightStrip.addSegment(new LightStripSegment( 74, 34, 1, bri)); // Seite
+	lightStrip.addSegment(new LightStripSegment( 33, 28, 1, bri)); // Box schmale Seite
+	lightStrip.addSegment(new LightStripSegment( 27,  9, 1, bri)); // Box breite Seite
+	lightStrip.addSegment(new LightStripSegment( 12, 90, 0, bri)); // Hinten
+	lightStrip.addSegment(new LightStripSegment( 91,149, 0, bri)); // Bar unten
+	lightStrip.addSegment(new LightStripSegment(150,224, 0, 255)); // Bar oben
 
-	if (!lightStrip.init()) {
+	if (!lightStrip.init(255)) {
 		return 1;
 	}
+	
+	fprintf(stderr, "Initialized %d leds...\n", lightStrip.ledCount());
 
-	lightStrip.setColor(255, 128, 64);
+	lightStrip.clear();
+	// lightStrip.setColor(255, 128, 64);
 	// Main loop
 	int cnt = 0;
 	while (running) {
-		int seg = userCounter % lightStrip.segmentCount();
-
+//		int seg = (cnt/50) % lightStrip.segmentCount();
+/*
 		lightStrip.clear();
 		lightStrip.segment(seg)->setColor(255, 128, 64);
 		lightStrip.segment(seg)->setColor(0, 255,0,0); // First RED
 		lightStrip.segment(seg)->setColor(lightStrip.segment(seg)->ledCount()-1, 0, 255,0); // Last GREEN
-
-		// barLightStrip.setColor(bar)
-		// barLightStrip.setRainbowColor(cnt);
+*/
+		for (int seg=0; seg < lightStrip.segmentCount(); seg++) {
+//			lightStrip.segment(seg)->setColor(255,255,255);
+			lightStrip.segment(seg)->setColor(255,170,40);
+//			lightStrip.segment(seg)->setRainbowColor(cnt);
+		}
+//		lightStrip.setColor(255,170,40);
+//		lightStrip.setColor(255,255,255);
+		lightStrip.setColor(cnt % lightStrip.ledCount(), 255, 0, 0);
+		/*
+		if (rand() % 10 == 1) {
+			int seg = rand() % lightStrip.segmentCount();
+			lightStrip.segment(seg)->setColor(255,0,0);
+		}
+		*/
+		/*
+		for (int seg=0; seg < lightStrip.segmentCount(); seg++) {
+			lightStrip.segment(seg)->setRainbowColor(cnt);
+		}
+		*/
 		lightStrip.render();
-		usleep(20*1000);
+		usleep(100*1000);
 
 		cnt++;
 	}

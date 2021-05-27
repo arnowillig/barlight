@@ -9,10 +9,10 @@ class LightStrip;
 class LightStripSegment
 {
 public:
-	LightStripSegment(int firstLED, int lastLED, int channel);
+	LightStripSegment(int firstLed, int lastLed, int channel, int bri);
 	int ledCount() const;
 	int firstLed() const;
-	int lastLED() const;
+	int lastLed() const;
 	int channel() const;
 
 	void setStrip(LightStrip* strip);
@@ -20,11 +20,13 @@ public:
 	void clear();
 	void setColor(int idx, uint8_t r, uint8_t g, uint8_t b);
 	void setColor(uint8_t r, uint8_t g, uint8_t b);
+	void setRainbowColor(int cnt);
 
 private:
 	int _firstLed;
-	int _lastLED;
+	int _lastLed;
 	int _channel;
+	int _bri;
 	LightStrip* _strip;
 };
 
@@ -37,7 +39,7 @@ public:
 	~LightStrip();
 
 	void addSegment(LightStripSegment* segment);
-	bool init(double gamma=0);
+	bool init(int bri=128, double gamma=0);
 
 	int exec();
 	void render();
@@ -51,11 +53,12 @@ public:
 	LightStripSegment* segment(int idx) const;
 
 	void clear();
+	void setColor(int idx, int chan, uint8_t r, uint8_t g, uint8_t b);
 	void setColor(int idx, uint8_t r, uint8_t g, uint8_t b);
 	void setColor(uint8_t r, uint8_t g, uint8_t b);
 
 	void setRainbowColor(int cnt);
-	void calcRainbowColor(int pos, uint8_t &r, uint8_t &g, uint8_t &b);
+static	void calcRainbowColor(int pos, uint8_t &r, uint8_t &g, uint8_t &b);
 private:
 	int getMaxLedForChannel(int chan);
 

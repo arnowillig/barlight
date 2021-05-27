@@ -11,7 +11,6 @@
 #define GPIO_PIN1               18
 #define GPIO_PIN2               13
 #define WS2811_DMA              10
-#define MAX_BRIGHTNESS		128
 
 LightStrip::LightStrip() : _ws2811(nullptr), _gamma(0.0)
 {
@@ -40,17 +39,16 @@ int LightStrip::getMaxLedForChannel(int chan)
 			if (segment->firstLed() > lastChannelLed) {
 				lastChannelLed = segment->firstLed();
 			}
-			if (segment->lastLED() > lastChannelLed) {
-				lastChannelLed = segment->lastLED();
+			if (segment->lastLed() > lastChannelLed) {
+				lastChannelLed = segment->lastLed();
 			}
 		}
 	}
 	return lastChannelLed+1;
 }
 
-bool LightStrip::init(double gamma)
+bool LightStrip::init(int bri, double gamma)
 {
-	fprintf(stderr, "INIT TEST\n");
 	_ws2811 = (ws2811_t *) malloc(sizeof(ws2811_t));
 	memset(_ws2811, 0, sizeof(ws2811_t));
 
@@ -60,12 +58,12 @@ bool LightStrip::init(double gamma)
 	_ws2811->channel[0].gpionum	= GPIO_PIN1;
 	_ws2811->channel[0].count	= getMaxLedForChannel(0);
 	_ws2811->channel[0].strip_type	= WS2812_STRIP;
-	_ws2811->channel[0].brightness	= MAX_BRIGHTNESS;
+	_ws2811->channel[0].brightness	= bri;
 
 	_ws2811->channel[1].gpionum	= GPIO_PIN2;
 	_ws2811->channel[1].count	= getMaxLedForChannel(1);
 	_ws2811->channel[1].strip_type	= WS2812_STRIP;
-	_ws2811->channel[1].brightness	= MAX_BRIGHTNESS;
+	_ws2811->channel[1].brightness	= bri;
 
 #ifdef _GUI_
 	_ws2811->channel[0].leds = (ws2811_led_t*) malloc(sizeof(ws2811_led_t) * _ws2811->channel[0].count);
@@ -132,6 +130,11 @@ LightStripSegment *LightStrip::segment(int idx) const
 	return _segments.at(idx);
 }
 
+void LightStrip::setColor(int idx, int chan, uint8_t r, uint8_t g, uint8_t  b)
+{
+	_ws2811->channel[chan].leds[idx] = ((r & 0x0ff) << 16) | ((g & 0x0ff) << 8) | (b & 0x0ff);
+}
+
 void LightStrip::setColor(int idx, uint8_t r, uint8_t g, uint8_t  b)
 {
 	for (LightStripSegment* segment : _segments) {
@@ -152,8 +155,9 @@ void LightStrip::setColor(uint8_t r, uint8_t g, uint8_t  b)
 
 void LightStrip::clear()
 {
-	memset(_ws2811->channel[0].leds, 0, _ws2811->channel[0].count);
-	memset(_ws2811->channel[1].leds, 0, _ws2811->channel[1].count);
+	// fprintf(stderr,"clear(%d,%d)\n", _ws2811->channel[0].count, _ws2811->channel[1].count);
+	memset(_ws2811->channel[0].leds, 0, sizeof(ws2811_led_t) * _ws2811->channel[0].count);
+	memset(_ws2811->channel[1].leds, 0, sizeof(ws2811_led_t) * _ws2811->channel[1].count);
 }
 
 void LightStrip::setRainbowColor(int cnt)
@@ -190,13 +194,14 @@ void LightStrip::calcRainbowColor(int pos, uint8_t& r, uint8_t& g, uint8_t& b)
 
 
 
-LightStripSegment::LightStripSegment(int firstLED, int lastLED, int channel) : _firstLed(firstLED), _lastLED(lastLED), _channel(channel), _strip(nullptr)
+LightStripSegment::LightStripSegment(int firstLed, int lastLed, int channel, int bri) : 
+	_firstLed(firstLed), _lastLed(lastLed), _channel(channel), _bri(bri),_strip(nullptr)
 {
 }
 
 int LightStripSegment::ledCount() const
 {
-	return abs(_lastLED - _firstLed);
+	return 1+abs(_lastLed - _firstLed);
 }
 
 int LightStripSegment::firstLed() const
@@ -204,9 +209,9 @@ int LightStripSegment::firstLed() const
 	return _firstLed;
 }
 
-int LightStripSegment::lastLED() const
+int LightStripSegment::lastLed() const
 {
-	return _lastLED;
+	return _lastLed;
 }
 
 int LightStripSegment::channel() const
@@ -221,14 +226,16 @@ void LightStripSegment::setStrip(LightStrip* strip)
 
 void LightStripSegment::setColor(int idx, uint8_t r, uint8_t g, uint8_t b)
 {
+	// fprintf(stderr, "seg::setCol(%d, '%02x%02x%02x')\n", idx, r,g,b);
 	assert(idx >=0 && idx < ledCount());
 
-	int i = _firstLed < _lastLED ? _firstLed + idx : _lastLED - idx;
-	_strip->setColor(i, r, g, b);
+	int i = _firstLed < _lastLed ? _firstLed + idx : _firstLed - idx;
+	_strip->setColor(i, _channel, _bri*r / 255, _bri*g / 255, _bri*b / 255);
 }
 
 void LightStripSegment::setColor(uint8_t r, uint8_t g, uint8_t b)
 {
+	// fprintf(stderr, "seg::setCol('%02x%02x%02x')\n", r,g,b);
 	for (int i=0; i < ledCount(); i++) {
 		setColor(i, r, g, b);
 	}
@@ -236,7 +243,19 @@ void LightStripSegment::setColor(uint8_t r, uint8_t g, uint8_t b)
 
 void LightStripSegment::clear()
 {
+	// fprintf(stderr, "seg::clear()\n");
 	for (int i=0; i < ledCount(); i++) {
 		setColor(i, 0, 0, 0);
+	}
+}
+
+void LightStripSegment::setRainbowColor(int cnt)
+{
+	uint8_t r, g, b;
+	int c = ledCount();
+	for (int i = 0; i < c; i++) {
+		uint8_t pos = (255*i / (c-1) + cnt);
+		LightStrip::calcRainbowColor(pos, r, g, b);
+		setColor(i, r, g, b);
 	}
 }
