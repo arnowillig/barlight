@@ -105,8 +105,11 @@ void RESTServer::setColor(const Rest::Request& request, Http::ResponseWriter res
 	response.send(Http::Code::Ok, resp);
 
 	_lightStrip->setMode("color");
+	_lightStrip->setColor(r,g,b);
+	/*
 	for (int i=0; i < _lightStrip->segmentCount(); i++) {
 		_lightStrip->segment(i)->setColor(r,g,b);
 	}
+	*/
 }
 
