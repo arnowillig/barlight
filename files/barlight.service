@@ -1,0 +1,32 @@
+[Unit]
+Description=BarLight Daemon
+Requires=multi-user.target
+#After=time-sync.target
+After=multi-user.target
+After=network-online.target
+#After=mariadb.service
+#After=systemd-hostnamed.service
+#After=systemd-timesyncd.service
+#After=systemd-time-wait-sync.service
+
+AllowIsolate=yes
+
+#Type=idle
+#After=systemd-user-sessions.service plymouth-quit-wait.service
+#After=rc-local.service
+#Before=getty.target
+#IgnoreOnIsolate=yes
+ 
+[Service]
+ExecStart=/usr/local/bin/barlight
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+WorkingDirectory=/root/src/barlight
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=root
+Nice=10
+ 
+[Install]
+WantedBy=multi-user.target

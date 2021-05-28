@@ -51,5 +51,5 @@ run:	ambipi
 	sudo ./ambipi
 
 restart: $(TARGET)
-	sudo service ambipi restart
+	sudo service barlight restart
 	
