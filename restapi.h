@@ -15,6 +15,7 @@ class RESTServer
 {
 public:
 	RESTServer(LightStrip* lightStrip);
+	~RESTServer();
 	void start(int port);
 	void setBrightness(const Rest::Request &request, Http::ResponseWriter response);
 	void getBrightness(const Rest::Request &request, Http::ResponseWriter response);
@@ -24,6 +25,7 @@ private:
 	LightStrip* _lightStrip;
 	Rest::Router _router;
 	std::string _basePath;
+	Http::Endpoint* _server;
 };
 
 #endif // RESTAPI_H

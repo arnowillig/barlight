@@ -258,17 +258,14 @@ void LightStripSegment::setStrip(LightStrip* strip)
 
 void LightStripSegment::setColor(int idx, uint8_t r, uint8_t g, uint8_t b)
 {
-	// fprintf(stderr, "seg::setCol(%d, '%02x%02x%02x')\n", idx, r,g,b);
 	assert(idx >=0 && idx < ledCount());
 
 	int i = _firstLed < _lastLed ? _firstLed + idx : _firstLed - idx;
-	_strip->setColor(i, _channel, _bri*r / 255, _bri*g / 255, _bri*b / 255);
-//	_strip->setColor(i, _channel, r,g,b);
+	_strip->setColor(i, _channel, (_bri*r) / 255, (_bri*g) / 255, (_bri*b) / 255);
 }
 
 void LightStripSegment::setColor(uint8_t r, uint8_t g, uint8_t b)
 {
-	// fprintf(stderr, "seg::setCol('%02x%02x%02x')\n", r,g,b);
 	for (int i=0; i < ledCount(); i++) {
 		setColor(i, r, g, b);
 	}
@@ -276,7 +273,6 @@ void LightStripSegment::setColor(uint8_t r, uint8_t g, uint8_t b)
 
 void LightStripSegment::clear()
 {
-	// fprintf(stderr, "seg::clear()\n");
 	for (int i=0; i < ledCount(); i++) {
 		setColor(i, 0, 0, 0);
 	}

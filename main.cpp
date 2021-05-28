@@ -31,11 +31,6 @@ static void signalHandler(int signo)
 	}
 }
 
-static void startServer(RESTServer* restServer)
-{
-	restServer->start(8080);
-}
-
 int main(int argc, char** argv)
 {
 	(void) argc;
@@ -44,9 +39,9 @@ int main(int argc, char** argv)
 	// Initialize abort handlers
 	signal(SIGINT,  signalHandler);
 	signal(SIGTERM, signalHandler);
-//	signal(SIGHUP,  signalHandler);
-//	signal(SIGUSR1, signalHandler);
-//	signal(SIGUSR2, signalHandler);
+	signal(SIGHUP,  signalHandler);
+	signal(SIGUSR1, signalHandler);
+	signal(SIGUSR2, signalHandler);
 	
 	// Initialize random generator
 	srand(time(NULL));
@@ -71,7 +66,7 @@ int main(int argc, char** argv)
 	fprintf(stderr, "Initialized %d leds...\n", lightStrip.ledCount());
 
 	RESTServer api(&lightStrip);
-	std::thread restThread(&startServer, &api);
+	api.start(8080);
 
 	lightStrip.clear();
 	lightStrip.setMode("snake");
@@ -102,9 +97,9 @@ int main(int argc, char** argv)
 
 		cnt++;
 	}
+	fprintf(stderr, "BarLight shutting down..\n");
 	lightStrip.setColor(0, 0, 0);
 	lightStrip.render();
-	restThread.join();
 	
 	return 0;
 }

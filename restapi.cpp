@@ -1,27 +1,37 @@
 #include "restapi.h"
 #include <algorithm>
 
-RESTServer::RESTServer(LightStrip* lightStrip) : _lightStrip(lightStrip)
+RESTServer::RESTServer(LightStrip* lightStrip) : _lightStrip(lightStrip), _server(nullptr)
 {
-	_basePath = "/root/src/barlight/html";
-
+#ifdef _GUI_
+	_basePath = "/home/akw/src/barlight/html";
+#else
+	_basePath = "/opt/barlight/html";
+#endif
 	Rest::Routes::Get(_router, "/api/bri/:bri",		Rest::Routes::bind(&RESTServer::setBrightness, this));
 	Rest::Routes::Get(_router, "/api/bri",			Rest::Routes::bind(&RESTServer::getBrightness, this));
 	Rest::Routes::Get(_router, "/api/col/:r/:g/:b",		Rest::Routes::bind(&RESTServer::setColor, this));
 	Rest::Routes::Get(_router, "/index.html",		Rest::Routes::bind(&RESTServer::getStaticHTML, this));
 	Rest::Routes::Get(_router, "/",				Rest::Routes::bind(&RESTServer::getStaticHTML, this));
 	Rest::Routes::Get(_router, "/static/*",                 Rest::Routes::bind(&RESTServer::getStaticHTML, this));
+}
 
+RESTServer::~RESTServer()
+{
+	if (_server) {
+		_server->shutdown();
+		delete _server;
+	}
 }
 
 void RESTServer::start(int port)
 {
 	Address addr(Ipv4::any(), Port(port));
 	auto opts = Http::Endpoint::options().threads(1).flags(Tcp::Options::ReuseAddr);
-	Http::Endpoint server(addr);
-	server.init(opts);
-	server.setHandler(_router.handler());
-	server.serve();
+	_server = new Http::Endpoint(addr);
+	_server->init(opts);
+	_server->setHandler(_router.handler());
+	_server->serveThreaded();
 }
 
 
@@ -63,7 +73,7 @@ void RESTServer::getBrightness(const Rest::Request& request, Http::ResponseWrite
 	(void) request;
 	int bri = (_lightStrip->brightness() * 100) / 255;
 
-	std::string resp = std::to_string(bri) + "\n";
+	std::string resp = "{ \"bri:\": " + std::to_string(bri) + " }\n";
 	response.send(Http::Code::Ok, resp);
 }
 
