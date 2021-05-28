@@ -69,8 +69,9 @@ void RESTServer::getMode(const Rest::Request &request, Http::ResponseWriter resp
 void RESTServer::setBrightness(const Rest::Request& request, Http::ResponseWriter response)
 {
 	int bri = request.param(":bri").as<int>();
-	if (bri<=100) {
-		bri = (bri * 255) / 100;
+	bri = (bri * 255) / 100;
+	if (bri>255) {
+		bri = 255;
 	}
 	std::cout << "BRI:" << bri << std::endl;
 

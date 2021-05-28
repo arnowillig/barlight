@@ -26,13 +26,18 @@ LightStrip::~LightStrip()
 
 void LightStrip::setBrightness(uint8_t bri)
 {
+	_mutex.lock();
 	_ws2811->channel[0].brightness	= bri;
 	_ws2811->channel[1].brightness	= bri;
+	_mutex.unlock();
 }
 
 uint8_t LightStrip::brightness() const
 {
-	return _ws2811->channel[0].brightness;
+	_mutex.lock();
+	int bri = _ws2811->channel[0].brightness;
+	_mutex.unlock();
+	return bri;
 }
 
 

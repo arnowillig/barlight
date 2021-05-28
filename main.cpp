@@ -64,12 +64,14 @@ int main(int argc, char** argv)
 		return 1;
 	}
 	
+/*
 #ifndef _GUI_
 	const rpi_hw_t* hw = rpi_hw_detect();
 	if (hw) {
 		fprintf(stderr, "Running on %s...\n", hw->desc);
 	}
 #endif
+*/
 	fprintf(stderr, "Initialized %d leds...\n", lightStrip.ledCount());
 
 	RESTServer api(&lightStrip);
