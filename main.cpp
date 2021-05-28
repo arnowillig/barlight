@@ -4,6 +4,7 @@
 #include <signal.h>
 #include <time.h>
 #include "barlight.h"
+#include "restapi.h"
 
 static bool running = true;
 static unsigned int userCounter = 4;
@@ -19,6 +20,11 @@ static void signalHandler(int signo)
 	if (signo == SIGUSR2) {
 		userCounter--;
 	}
+}
+
+static void startServer(RESTServer* restServer)
+{
+	restServer->start(8080);
 }
 
 int main(int argc, char** argv)
@@ -53,6 +59,9 @@ int main(int argc, char** argv)
 	}
 	
 	fprintf(stderr, "Initialized %d leds...\n", lightStrip.ledCount());
+
+	RESTServer api(&lightStrip);
+	std::thread restThread(&startServer, &api);
 
 	lightStrip.clear();
 	// 
@@ -96,6 +105,7 @@ int main(int argc, char** argv)
 			lightStrip.segment(seg)->setRainbowColor(cnt);
 		}
 		*/
+#endif
 		lightStrip.render();
 		usleep(10*1000);
 

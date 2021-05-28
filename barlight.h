@@ -58,7 +58,11 @@ public:
 	void setColor(uint8_t r, uint8_t g, uint8_t b);
 
 	void setRainbowColor(int cnt);
-static	void calcRainbowColor(int pos, uint8_t &r, uint8_t &g, uint8_t &b);
+	static	void calcRainbowColor(int pos, uint8_t &r, uint8_t &g, uint8_t &b);
+
+	// API
+	void setBrightness(uint8_t bri);
+	uint8_t brightness() const;
 private:
 	int getMaxLedForChannel(int chan);
 

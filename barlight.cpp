@@ -4,7 +4,6 @@
 #include <assert.h>
 
 #include "barlight.h"
-#include "barlight.h"
 #include "rpi_ws281x/ws2811.h"
 
 #define TARGET_FREQ             WS2811_TARGET_FREQ
@@ -24,6 +23,18 @@ LightStrip::~LightStrip()
 	ws2811_wait(_ws2811);
 #endif
 }
+
+void LightStrip::setBrightness(uint8_t bri)
+{
+	_ws2811->channel[0].brightness	= bri;
+	_ws2811->channel[1].brightness	= bri;
+}
+
+uint8_t LightStrip::brightness() const
+{
+	return _ws2811->channel[0].brightness;
+}
+
 
 void LightStrip::addSegment(LightStripSegment* segment)
 {
