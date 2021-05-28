@@ -44,9 +44,9 @@ int main(int argc, char** argv)
 	// Initialize abort handlers
 	signal(SIGINT,  signalHandler);
 	signal(SIGTERM, signalHandler);
-	signal(SIGHUP,  signalHandler);
-	signal(SIGUSR1, signalHandler);
-	signal(SIGUSR2, signalHandler);
+//	signal(SIGHUP,  signalHandler);
+//	signal(SIGUSR1, signalHandler);
+//	signal(SIGUSR2, signalHandler);
 	
 	// Initialize random generator
 	srand(time(NULL));
@@ -54,8 +54,8 @@ int main(int argc, char** argv)
 	// Creating LightStrip object
 	LightStrip lightStrip;
 
-	int overallBrightness = 255;
-	int bri = 48;
+	int overallBrightness = 40;
+	int bri = 255;
 	lightStrip.addSegment(new LightStripSegment( 74, 34, 1, bri)); // Right side
 	lightStrip.addSegment(new LightStripSegment( 33, 28, 1, bri)); // Box short side
 	lightStrip.addSegment(new LightStripSegment( 27,  9, 1, bri)); // Box long side
@@ -102,5 +102,9 @@ int main(int argc, char** argv)
 
 		cnt++;
 	}
+	lightStrip.setColor(0, 0, 0);
+	lightStrip.render();
+	restThread.join();
+	
 	return 0;
 }

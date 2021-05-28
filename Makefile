@@ -9,6 +9,7 @@ LIBS += -lpthread
 
 INCLUDES += -I pistache/include/
 
+CFLAGS += -g -std=c++17 -Wall -pedantic
 CFLAGS += -Wfatal-errors -Wno-deprecated-declarations
 
 TARGET = barlight
