@@ -69,14 +69,12 @@ void RESTServer::getMode(const Rest::Request &request, Http::ResponseWriter resp
 void RESTServer::setBrightness(const Rest::Request& request, Http::ResponseWriter response)
 {
 	int bri = request.param(":bri").as<int>();
+	std::string resp = "{ \"bri:\": " + std::to_string(bri) + " }\n";
+
 	bri = (bri * 255) / 100;
 	if (bri>255) {
 		bri = 255;
 	}
-	std::cout << "BRI:" << bri << std::endl;
-
-	std::string resp = std::to_string(bri);
-	resp.append("\n");
 	response.send(Http::Code::Ok, resp);
 	if (bri==0) {
 		_lightStrip->setMode("off");
@@ -101,7 +99,7 @@ void RESTServer::setColor(const Rest::Request& request, Http::ResponseWriter res
 	int r = request.param(":r").as<int>();
 	int g = request.param(":g").as<int>();
 	int b = request.param(":b").as<int>();
-	std::string resp = std::to_string(r) + "," + std::to_string(g) + "," + std::to_string(b) + "\n";
+	std::string resp = "{ \"col:\": \"" + std::to_string(r) + "," + std::to_string(g) + "," + std::to_string(b) + "\" }\n";
 	response.send(Http::Code::Ok, resp);
 
 	_lightStrip->setMode("color");
