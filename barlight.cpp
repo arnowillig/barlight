@@ -231,6 +231,7 @@ void LightStripSegment::setColor(int idx, uint8_t r, uint8_t g, uint8_t b)
 
 	int i = _firstLed < _lastLed ? _firstLed + idx : _firstLed - idx;
 	_strip->setColor(i, _channel, _bri*r / 255, _bri*g / 255, _bri*b / 255);
+//	_strip->setColor(i, _channel, r,g,b);
 }
 
 void LightStripSegment::setColor(uint8_t r, uint8_t g, uint8_t b)
