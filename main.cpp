@@ -58,7 +58,7 @@ int main(int argc, char** argv)
 //	lightStrip.addSegment(new LightStripSegment(  0, 11, 0, bri)); // Inside box (12 leds)
 	lightStrip.addSegment(new LightStripSegment( 12, 91, 0, bri)); // Back side
 	lightStrip.addSegment(new LightStripSegment( 91,149, 0, 255)); // Bar lower
-	lightStrip.addSegment(new LightStripSegment(150,211, 0, 255)); // Bar upper
+	lightStrip.addSegment(new LightStripSegment(211,150, 0, 255)); // Bar upper
 
 	if (!lightStrip.init(overallBrightness)) {
 		return 1;
@@ -84,7 +84,6 @@ int main(int argc, char** argv)
 	int sleep = 10;
 	int cnt = 0;
 	while (running) {
-		lightStrip.setColor(255, 170, 40);
 		if (lightStrip.mode()=="off") {
 			sleep = 500;
 			lightStrip.setColor(0, 0, 0);

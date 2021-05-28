@@ -76,11 +76,13 @@ void RESTServer::setBrightness(const Rest::Request& request, Http::ResponseWrite
 		bri = 255;
 	}
 	response.send(Http::Code::Ok, resp);
+	/*
 	if (bri==0) {
 		_lightStrip->setMode("off");
 	} else {
 		_lightStrip->setMode("color");
 	}
+	*/
 	_lightStrip->setBrightness(bri);
 }
 
