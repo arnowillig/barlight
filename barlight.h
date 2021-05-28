@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <vector>
 #include <string>
+#include <mutex>
 
 class LightStrip;
 
@@ -79,6 +80,7 @@ private:
 	std::vector<LightStripSegment*> _segments;
 	uint32_t _color;
 	std::string _mode;
+	std::mutex _mutex;
 };
 
 #endif // BARLIGHT_H

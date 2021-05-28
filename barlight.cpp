@@ -93,7 +93,9 @@ bool LightStrip::init(int bri, double gamma)
 	memset(_ws2811->channel[1].leds, 0, sizeof(ws2811_led_t) * _ws2811->channel[1].count);
 	ws2811_return_t ret = WS2811_SUCCESS;
 #else
+	_mutex.lock();
 	ws2811_return_t ret = ws2811_init(_ws2811);
+	_mutex.unlock();
 #endif
 	if (ret != WS2811_SUCCESS) {
 		fprintf(stderr, "Error: %s\n", ws2811_get_return_t_str(ret));
@@ -108,7 +110,9 @@ bool LightStrip::init(int bri, double gamma)
 void LightStrip::render()
 {
 #ifndef _GUI_
+	_mutex.lock();
 	ws2811_render(_ws2811);
+	_mutex.unlock();
 #endif
 }
 
@@ -136,7 +140,9 @@ void LightStrip::setGamma(double gamma)
 {
 	_gamma = gamma;
 #ifndef _GUI_
+	_mutex.lock();
 	ws2811_set_custom_gamma_factor(_ws2811, gamma);
+	_mutex.unlock();
 #endif
 }
 
@@ -153,7 +159,9 @@ LightStripSegment *LightStrip::segment(int idx) const
 
 void LightStrip::setColor(int idx, int chan, uint8_t r, uint8_t g, uint8_t  b)
 {
+	_mutex.lock();
 	_ws2811->channel[chan].leds[idx] = ((r & 0x0ff) << 16) | ((g & 0x0ff) << 8) | (b & 0x0ff);
+	_mutex.unlock();
 }
 
 void LightStrip::setColor(int idx, uint8_t r, uint8_t g, uint8_t  b)

@@ -11,6 +11,8 @@ RESTServer::RESTServer(LightStrip* lightStrip) : _lightStrip(lightStrip), _serve
 	Rest::Routes::Get(_router, "/api/bri/:bri",		Rest::Routes::bind(&RESTServer::setBrightness, this));
 	Rest::Routes::Get(_router, "/api/bri",			Rest::Routes::bind(&RESTServer::getBrightness, this));
 	Rest::Routes::Get(_router, "/api/col/:r/:g/:b",		Rest::Routes::bind(&RESTServer::setColor, this));
+	Rest::Routes::Get(_router, "/api/mode/:mode",		Rest::Routes::bind(&RESTServer::setMode, this));
+	Rest::Routes::Get(_router, "/api/mode",			Rest::Routes::bind(&RESTServer::getMode, this));
 	Rest::Routes::Get(_router, "/index.html",		Rest::Routes::bind(&RESTServer::getStaticHTML, this));
 	Rest::Routes::Get(_router, "/",				Rest::Routes::bind(&RESTServer::getStaticHTML, this));
 	Rest::Routes::Get(_router, "/static/*",                 Rest::Routes::bind(&RESTServer::getStaticHTML, this));
@@ -48,6 +50,21 @@ void RESTServer::getStaticHTML(const Rest::Request& request, Http::ResponseWrite
 	}
 	response.send(Http::Code::Not_Found);
 }
+
+void RESTServer::setMode(const Rest::Request &request, Http::ResponseWriter response)
+{
+	std::string mode = request.param(":mode").as<std::string>();
+	std::string resp = mode + "\n";
+	response.send(Http::Code::Ok, resp);
+	_lightStrip->setMode(mode);
+}
+
+void RESTServer::getMode(const Rest::Request &request, Http::ResponseWriter response)
+{
+	(void) request;
+	response.send(Http::Code::Ok, "{ \"mode\": \""+_lightStrip->mode()+"\"}\n");
+}
+
 
 void RESTServer::setBrightness(const Rest::Request& request, Http::ResponseWriter response)
 {
