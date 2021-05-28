@@ -50,6 +50,11 @@ void RESTServer::setBrightness(const Rest::Request& request, Http::ResponseWrite
 	std::string resp = std::to_string(bri);
 	resp.append("\n");
 	response.send(Http::Code::Ok, resp);
+	if (bri==0) {
+		_lightStrip->setMode("off");
+	} else {
+		_lightStrip->setMode("color");
+	}
 	_lightStrip->setBrightness(bri);
 }
 
@@ -71,6 +76,7 @@ void RESTServer::setColor(const Rest::Request& request, Http::ResponseWriter res
 	std::string resp = std::to_string(r) + "," + std::to_string(g) + "," + std::to_string(b) + "\n";
 	response.send(Http::Code::Ok, resp);
 
+	_lightStrip->setMode("color");
 	for (int i=0; i < _lightStrip->segmentCount(); i++) {
 		_lightStrip->segment(i)->setColor(r,g,b);
 	}

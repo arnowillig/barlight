@@ -11,7 +11,7 @@
 #define GPIO_PIN2               13
 #define WS2811_DMA              10
 
-LightStrip::LightStrip() : _ws2811(nullptr), _gamma(0.0)
+LightStrip::LightStrip() : _ws2811(nullptr), _gamma(0.0), _color(0), _mode("off")
 {
 }
 
@@ -56,6 +56,16 @@ int LightStrip::getMaxLedForChannel(int chan)
 		}
 	}
 	return lastChannelLed+1;
+}
+
+std::string LightStrip::mode() const
+{
+	return _mode;
+}
+
+void LightStrip::setMode(const std::string &mode)
+{
+	_mode = mode;
 }
 
 bool LightStrip::init(int bri, double gamma)
@@ -159,6 +169,17 @@ void LightStrip::setColor(int idx, uint8_t r, uint8_t g, uint8_t  b)
 
 void LightStrip::setColor(uint8_t r, uint8_t g, uint8_t  b)
 {
+	_color = ((r & 0x0ff) << 16) | ((g & 0x0ff) << 8) | (b & 0x0ff);
+	for (int i=0; i < ledCount(); i++) {
+		setColor(i, r, g, b);
+	}
+}
+
+void LightStrip::setLastColor()
+{
+	uint8_t r = (_color >> 16) & 0xff;
+	uint8_t g = (_color >>  8) & 0xff;
+	uint8_t b = (_color >>  0) & 0xff;
 	for (int i=0; i < ledCount(); i++) {
 		setColor(i, r, g, b);
 	}
@@ -270,4 +291,14 @@ void LightStripSegment::setRainbowColor(int cnt)
 		LightStrip::calcRainbowColor(pos, r, g, b);
 		setColor(i, r, g, b);
 	}
+}
+
+int LightStripSegment::brightness() const
+{
+	return _bri;
+}
+
+void LightStripSegment::setBrightness(int bri)
+{
+	_bri = bri;
 }
