@@ -23,6 +23,7 @@ public:
 	void getBrightness(const Rest::Request &request, Http::ResponseWriter response);
 	void getStaticHTML(const Rest::Request &request, Http::ResponseWriter response);
 	void setColor(const Rest::Request &request, Http::ResponseWriter response);
+	void getColor(const Rest::Request &request, Http::ResponseWriter response);
 private:
 	LightStrip* _lightStrip;
 	Rest::Router _router;

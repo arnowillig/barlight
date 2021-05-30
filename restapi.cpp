@@ -11,6 +11,7 @@ RESTServer::RESTServer(LightStrip* lightStrip) : _lightStrip(lightStrip), _serve
 	Rest::Routes::Get(_router, "/api/bri/:bri",		Rest::Routes::bind(&RESTServer::setBrightness, this));
 	Rest::Routes::Get(_router, "/api/bri",			Rest::Routes::bind(&RESTServer::getBrightness, this));
 	Rest::Routes::Get(_router, "/api/col/:r/:g/:b",		Rest::Routes::bind(&RESTServer::setColor, this));
+	Rest::Routes::Get(_router, "/api/col",			Rest::Routes::bind(&RESTServer::getColor, this));
 	Rest::Routes::Get(_router, "/api/mode/:mode",		Rest::Routes::bind(&RESTServer::setMode, this));
 	Rest::Routes::Get(_router, "/api/mode",			Rest::Routes::bind(&RESTServer::getMode, this));
 	Rest::Routes::Get(_router, "/index.html",		Rest::Routes::bind(&RESTServer::getStaticHTML, this));
@@ -113,3 +114,14 @@ void RESTServer::setColor(const Rest::Request& request, Http::ResponseWriter res
 	*/
 }
 
+void RESTServer::getColor(const Rest::Request& request, Http::ResponseWriter response)
+{
+	(void) request;
+	int color = _lightStrip->lastColor();
+        uint8_t r = (color >> 16) & 0xff;
+        uint8_t g = (color >>  8) & 0xff;
+        uint8_t b = (color >>  0) & 0xff;
+
+	std::string resp = "{ \"col:\": \"" + std::to_string(r) + "," + std::to_string(g) + "," + std::to_string(b) + "\" }\n";
+	response.send(Http::Code::Ok, resp);
+}

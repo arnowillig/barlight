@@ -50,7 +50,7 @@ int main(int argc, char** argv)
 	// Creating LightStrip object
 	LightStrip lightStrip;
 
-	int overallBrightness = 40;
+	int overallBrightness = 255;
 	int bri = 255;
 	lightStrip.addSegment(new LightStripSegment( 74, 34, 1, bri)); // Right side
 	lightStrip.addSegment(new LightStripSegment( 33, 28, 1, bri)); // Box short side
@@ -58,28 +58,19 @@ int main(int argc, char** argv)
 //	lightStrip.addSegment(new LightStripSegment(  0, 11, 0, bri)); // Inside box (12 leds)
 	lightStrip.addSegment(new LightStripSegment( 12, 91, 0, bri)); // Back side
 	lightStrip.addSegment(new LightStripSegment( 91,149, 0, 255)); // Bar lower
-	lightStrip.addSegment(new LightStripSegment(211,150, 0, 255)); // Bar upper
+	lightStrip.addSegment(new LightStripSegment(208,150, 0, 255)); // Bar upper
 
 	if (!lightStrip.init(overallBrightness)) {
 		return 1;
 	}
-	
-/*
-#ifndef _GUI_
-	const rpi_hw_t* hw = rpi_hw_detect();
-	if (hw) {
-		fprintf(stderr, "Running on %s...\n", hw->desc);
-	}
-#endif
-*/
-	fprintf(stderr, "Initialized %d leds...\n", lightStrip.ledCount());
+	fprintf(stderr, "Initialized %d (%d/%d) leds...\n", lightStrip.ledCount(), lightStrip.getMaxLedForChannel(0), lightStrip.getMaxLedForChannel(1));
 
 	RESTServer api(&lightStrip);
 	api.start(8080);
 
 	lightStrip.clear();
 	lightStrip.setMode("snake");
-	lightStrip.setColor(255, 170, 170);
+	lightStrip.setColor(255, 146, 40);
 	// Main loop
 	int sleep = 10;
 	int cnt = 0;
@@ -94,10 +85,15 @@ int main(int argc, char** argv)
 			sleep = 100;
 			lightStrip.setLastColor();
 		} else if (lightStrip.mode()=="snake") {
-			sleep = 5;
+			sleep = 15;
 			lightStrip.setLastColor();
-			for (int x=0;x<10;x++) {
-				lightStrip.setColor((cnt+x) % lightStrip.ledCount(), 255, 255, 255);
+			uint8_t r,g,b;
+			for (int x=0;x<20;x++) {
+				int ii = (cnt+x) % lightStrip.ledCount();
+				uint8_t pos = (255*ii / (20-1) + cnt);
+				lightStrip.calcRainbowColor(pos, r, g, b);
+        		        lightStrip.setColor(ii, r, g, b);
+				// lightStrip.setColor((cnt+x) % lightStrip.ledCount(), 255, 0, 0);
 			}
 		}
 		lightStrip.render();

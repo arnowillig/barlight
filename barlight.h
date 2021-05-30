@@ -62,6 +62,7 @@ public:
 	void setColor(int idx, uint8_t r, uint8_t g, uint8_t b);
 	void setColor(uint8_t r, uint8_t g, uint8_t b);
 	void setLastColor();
+	int lastColor() const { return _color; }
 
 	void setRainbowColor(int cnt);
 	static	void calcRainbowColor(int pos, uint8_t &r, uint8_t &g, uint8_t &b);
@@ -71,9 +72,9 @@ public:
 	void setBrightness(uint8_t bri);
 	std::string mode() const;
 	void setMode(const std::string &mode);
+	int getMaxLedForChannel(int chan);
 
 private:
-	int getMaxLedForChannel(int chan);
 
 	ws2811_t* _ws2811;
 	double _gamma;
