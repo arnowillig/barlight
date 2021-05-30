@@ -14,6 +14,7 @@ RESTServer::RESTServer(LightStrip* lightStrip) : _lightStrip(lightStrip), _serve
 	Rest::Routes::Get(_router, "/api/col",			Rest::Routes::bind(&RESTServer::getColor, this));
 	Rest::Routes::Get(_router, "/api/mode/:mode",		Rest::Routes::bind(&RESTServer::setMode, this));
 	Rest::Routes::Get(_router, "/api/mode",			Rest::Routes::bind(&RESTServer::getMode, this));
+	Rest::Routes::Get(_router, "/api/beat",			Rest::Routes::bind(&RESTServer::incBeatCounter, this));
 	Rest::Routes::Get(_router, "/index.html",		Rest::Routes::bind(&RESTServer::getStaticHTML, this));
 	Rest::Routes::Get(_router, "/",				Rest::Routes::bind(&RESTServer::getStaticHTML, this));
 	Rest::Routes::Get(_router, "/static/*",                 Rest::Routes::bind(&RESTServer::getStaticHTML, this));
@@ -50,6 +51,13 @@ void RESTServer::getStaticHTML(const Rest::Request& request, Http::ResponseWrite
 		return;
 	}
 	response.send(Http::Code::Not_Found);
+}
+
+void RESTServer::incBeatCounter(const Rest::Request &request, Http::ResponseWriter response)
+{
+	std::string resp = "{ \"beat\": true; }\n";
+	response.send(Http::Code::Ok, resp);
+	_lightStrip->incBeatCounter();
 }
 
 void RESTServer::setMode(const Rest::Request &request, Http::ResponseWriter response)

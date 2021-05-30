@@ -51,6 +51,7 @@ public:
 
 	int ledCount() const;
 	int segmentCount() const;
+	int getMaxLedForChannel(int chan);
 
 	void setGamma(double gamma);
 	double gamma() const;
@@ -72,7 +73,8 @@ public:
 	void setBrightness(uint8_t bri);
 	std::string mode() const;
 	void setMode(const std::string &mode);
-	int getMaxLedForChannel(int chan);
+	void incBeatCounter() { _beatCounter++; }
+	unsigned int beatCounter() const { return _beatCounter; }
 
 private:
 
@@ -80,6 +82,7 @@ private:
 	double _gamma;
 	std::vector<LightStripSegment*> _segments;
 	uint32_t _color;
+	unsigned int _beatCounter;
 	std::string _mode;
 	mutable std::mutex _mutex;
 };

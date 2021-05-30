@@ -11,7 +11,7 @@
 #define GPIO_PIN2               13
 #define WS2811_DMA              10
 
-LightStrip::LightStrip() : _ws2811(nullptr), _gamma(0.0), _color(0), _mode("off")
+LightStrip::LightStrip() : _ws2811(nullptr), _gamma(0.0), _color(0), _beatCounter(0), _mode("off")
 {
 }
 

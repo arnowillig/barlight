@@ -6,10 +6,12 @@
 #include "rpi_ws281x/rpihw.h"
 #include "barlight.h"
 #include "restapi.h"
+#include "hsv.h"
 
 static bool running = true;
 static unsigned int userCounter = 0;
 static unsigned int mainCounter = 0;
+static unsigned int beatCounter = 0;
 
 static void signalHandler(int signo)
 {
@@ -69,7 +71,7 @@ int main(int argc, char** argv)
 	api.start(8080);
 
 	lightStrip.clear();
-	lightStrip.setMode("snake");
+	lightStrip.setMode("color");
 	lightStrip.setColor(255, 146, 40);
 	// Main loop
 	int sleep = 10;
@@ -84,6 +86,27 @@ int main(int argc, char** argv)
 		} else if (lightStrip.mode()=="color") {
 			sleep = 100;
 			lightStrip.setLastColor();
+			
+		} else if (lightStrip.mode()=="disco") {
+			sleep = 20;
+			if (beatCounter != lightStrip.beatCounter()) {
+				beatCounter = lightStrip.beatCounter();
+				uint8_t r,g,b;
+				for (int i=0; i<lightStrip.segmentCount(); i++) {
+					HsvColor hsv;
+				
+					hsv.h = (rand() % 18) * 15;
+					hsv.s = 255;
+					hsv.v = 255;
+					RgbColor rgb = HsvToRgb(hsv);
+				
+					r = rgb.r;
+					g = rgb.g;
+					b = rgb.b;
+					LightStripSegment* segment = lightStrip.segment(i);
+					segment->setColor(r,g,b);
+				}
+			}
 		} else if (lightStrip.mode()=="snake") {
 			sleep = 15;
 			lightStrip.setLastColor();
