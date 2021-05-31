@@ -162,10 +162,20 @@ LightStripSegment *LightStrip::segment(int idx) const
 	return _segments.at(idx);
 }
 
-void LightStrip::setColor(int idx, int chan, uint8_t r, uint8_t g, uint8_t  b)
+void LightStrip::setColor(int idx, int chan, uint8_t r, uint8_t g, uint8_t b)
 {
 	_mutex.lock();
 	_ws2811->channel[chan].leds[idx] = ((r & 0x0ff) << 16) | ((g & 0x0ff) << 8) | (b & 0x0ff);
+	_mutex.unlock();
+}
+
+void LightStrip::getColor(int idx, int chan, uint8_t* r, uint8_t* g, uint8_t* b)
+{
+	_mutex.lock();
+	uint32_t col = _ws2811->channel[chan].leds[idx];
+	*r = (col >> 16) & 0xff;
+	*g = (col >>  8) & 0xff;
+	*b = (col >>  0) & 0xff;
 	_mutex.unlock();
 }
 
@@ -174,6 +184,17 @@ void LightStrip::setColor(int idx, uint8_t r, uint8_t g, uint8_t  b)
 	for (LightStripSegment* segment : _segments) {
 		if (idx < segment->ledCount()) {
 			segment->setColor(idx, r, g, b);
+			return;
+		}
+		idx -= segment->ledCount();
+	}
+}
+
+void LightStrip::getColor(int idx, uint8_t* r, uint8_t* g, uint8_t* b)
+{
+	for (LightStripSegment* segment : _segments) {
+		if (idx < segment->ledCount()) {
+			segment->getColor(idx, r, g, b);
 			return;
 		}
 		idx -= segment->ledCount();
@@ -275,6 +296,14 @@ void LightStripSegment::setColor(int idx, uint8_t r, uint8_t g, uint8_t b)
 
 	int i = _firstLed < _lastLed ? _firstLed + idx : _firstLed - idx;
 	_strip->setColor(i, _channel, (_bri*r) / 255, (_bri*g) / 255, (_bri*b) / 255);
+}
+
+void LightStripSegment::getColor(int idx, uint8_t* r, uint8_t* g, uint8_t* b)
+{
+	assert(idx >=0 && idx < ledCount());
+
+	int i = _firstLed < _lastLed ? _firstLed + idx : _firstLed - idx;
+	_strip->getColor(i, _channel, r, g, b);
 }
 
 void LightStripSegment::setColor(uint8_t r, uint8_t g, uint8_t b)

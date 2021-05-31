@@ -76,6 +76,7 @@ int main(int argc, char** argv)
 	// Main loop
 	int sleep = 10;
 	int cnt = 0;
+	int lc = lightStrip.ledCount();
 	while (running) {
 		if (lightStrip.mode()=="off") {
 			sleep = 500;
@@ -87,6 +88,60 @@ int main(int argc, char** argv)
 			sleep = 100;
 			lightStrip.setLastColor();
 			
+		} else if (lightStrip.mode()=="starlight") {
+			sleep = 10;
+			uint8_t r,g,b;
+			float decay = 0.90;
+			for (int i=0; i<lc; i++) {				
+				lightStrip.getColor(i, &r, &g, &b);
+				lightStrip.setColor(i, r*decay,g*decay,b*decay);
+			}
+			int i1 = rand() % lc;
+			lightStrip.setColor(i1, 255, 255, 255);
+			if (beatCounter != lightStrip.beatCounter()) {
+				beatCounter = lightStrip.beatCounter();
+				for (int i=0;i<50;i++) {
+					int i1 = rand() % lc;
+					lightStrip.setColor(i1, 255, 255, 255);
+				}
+			}
+		
+		} else if (lightStrip.mode()=="bluebeat") {
+			sleep = 20;
+			uint8_t r,g,b;
+			float decay = 0.96;
+			for (int i=0; i<lc; i++) {
+				lightStrip.getColor(i, &r, &g, &b);
+				lightStrip.setColor(i, r*decay,g*decay,b*decay);
+			}
+			if (beatCounter != lightStrip.beatCounter()) {
+				beatCounter = lightStrip.beatCounter();
+				lightStrip.setColor(0,0,255);
+			}
+		
+		} else if (lightStrip.mode()=="snakes") {
+			sleep = 10;
+			uint8_t r,g,b;
+			float decay = 0.75;
+			for (int i=0; i<lc; i++) {				
+				lightStrip.getColor(i, &r, &g, &b);
+				lightStrip.setColor(i, r*decay,g*decay,b*decay);
+			}
+			int i1 = abs ((((uint8_t)(lc*0.0)+cnt) % (lc*2)) - lc);
+			int i2 = abs ((((uint8_t)(lc*0.2)+cnt) % (lc*2)) - lc);
+			int i3 = abs ((((uint8_t)(lc*0.4)+cnt) % (lc*2)) - lc);
+			int i4 = abs ((((uint8_t)(lc*0.6)+cnt) % (lc*2)) - lc);
+			int i5 = abs ((((uint8_t)(lc*0.8)+cnt) % (lc*2)) - lc);
+			lightStrip.getColor(i1, &r, &g, &b);
+			lightStrip.setColor(i1, 255, (128*g)/255, (128*b)/255);
+			lightStrip.getColor(i2, &r, &g, &b);
+			lightStrip.setColor(i2, (128*r)/255, 255, (128*b)/255);
+			lightStrip.getColor(i3, &r, &g, &b);
+			lightStrip.setColor(i3, (128*r)/255, (128*g)/255, 255);
+			lightStrip.getColor(i4, &r, &g, &b);
+			lightStrip.setColor(i4, 255, 255, (128*b)/255);
+			lightStrip.getColor(i5, &r, &g, &b);
+			lightStrip.setColor(i5, 255, (128*b)/255, 255);
 		} else if (lightStrip.mode()=="disco") {
 			sleep = 20;
 			if (beatCounter != lightStrip.beatCounter()) {

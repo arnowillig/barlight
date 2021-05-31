@@ -21,6 +21,7 @@ public:
 
 	void clear();
 	void setColor(int idx, uint8_t r, uint8_t g, uint8_t b);
+	void getColor(int idx, uint8_t* r, uint8_t* g, uint8_t* b);
 	void setColor(uint8_t r, uint8_t g, uint8_t b);
 	void setRainbowColor(int cnt);
 
@@ -60,7 +61,9 @@ public:
 
 	void clear();
 	void setColor(int idx, int chan, uint8_t r, uint8_t g, uint8_t b);
+	void getColor(int idx, int chan, uint8_t* r, uint8_t* g, uint8_t* b);
 	void setColor(int idx, uint8_t r, uint8_t g, uint8_t b);
+	void getColor(int idx, uint8_t* r, uint8_t* g, uint8_t* b);
 	void setColor(uint8_t r, uint8_t g, uint8_t b);
 	void setLastColor();
 	int lastColor() const { return _color; }
