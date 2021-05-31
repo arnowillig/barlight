@@ -148,16 +148,12 @@ int main(int argc, char** argv)
 				beatCounter = lightStrip.beatCounter();
 				uint8_t r,g,b;
 				for (int i=0; i<lightStrip.segmentCount(); i++) {
-					HsvColor hsv;
-				
-					hsv.h = (rand() % 18) * 15;
-					hsv.s = 255;
-					hsv.v = 255;
-					RgbColor rgb = HsvToRgb(hsv);
-				
-					r = rgb.r;
-					g = rgb.g;
-					b = rgb.b;
+					uint8_t h = (rand() % 18) * 15;
+					Color col = Color::fromHSV(h, 255, 255);
+					// RgbColor rgb = hsvToRgb(h, 255, 255);
+					r = col.r;
+					g = col.g;
+					b = col.b;
 					LightStripSegment* segment = lightStrip.segment(i);
 					segment->setColor(r,g,b);
 				}

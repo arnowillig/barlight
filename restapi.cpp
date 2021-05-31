@@ -55,6 +55,7 @@ void RESTServer::getStaticHTML(const Rest::Request& request, Http::ResponseWrite
 
 void RESTServer::incBeatCounter(const Rest::Request &request, Http::ResponseWriter response)
 {
+	(void) request;
 	std::string resp = "{ \"beat\": true; }\n";
 	response.send(Http::Code::Ok, resp);
 	_lightStrip->incBeatCounter();
