@@ -81,7 +81,7 @@ int main(int argc, char** argv)
 			sleep = 500;
 			lightStrip.setColor(0, 0, 0);
 		} else if (lightStrip.mode()=="rainbow") {
-			sleep = 5;
+			sleep = 20;
 			lightStrip.setRainbowColor(cnt);
 		} else if (lightStrip.mode()=="color") {
 			sleep = 100;
