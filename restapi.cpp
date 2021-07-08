@@ -79,7 +79,7 @@ void RESTServer::getMode(const Rest::Request &request, Http::ResponseWriter resp
 void RESTServer::setBrightness(const Rest::Request& request, Http::ResponseWriter response)
 {
 	int bri = request.param(":bri").as<int>();
-	std::string resp = "{ \"bri:\": " + std::to_string(bri) + " }\n";
+	std::string resp = "{ \"bri\": " + std::to_string(bri) + " }\n";
 
 	bri = (bri * 255) / 100;
 	if (bri>255) {
@@ -101,7 +101,7 @@ void RESTServer::getBrightness(const Rest::Request& request, Http::ResponseWrite
 	(void) request;
 	int bri = (_lightStrip->brightness() * 100) / 255;
 
-	std::string resp = "{ \"bri:\": " + std::to_string(bri) + " }\n";
+	std::string resp = "{ \"bri\": " + std::to_string(bri) + " }\n";
 	response.send(Http::Code::Ok, resp);
 }
 
