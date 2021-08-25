@@ -17,6 +17,7 @@ public:
 	RESTServer(LightStrip* lightStrip);
 	~RESTServer();
 	void start(int port);
+	void preflight(const Rest::Request &request, Http::ResponseWriter response);
 	void incBeatCounter(const Rest::Request &request, Http::ResponseWriter response);
 	void setMode(const Rest::Request &request, Http::ResponseWriter response);
 	void getMode(const Rest::Request &request, Http::ResponseWriter response);

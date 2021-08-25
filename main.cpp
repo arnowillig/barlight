@@ -1,4 +1,5 @@
 #include <stdio.h>
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
@@ -54,9 +55,11 @@ int main(int argc, char** argv)
 
 	int overallBrightness = 255;
 	int bri = 255;
-	lightStrip.addSegment(new LightStripSegment( 74, 34, 1, bri)); // Right side
-	lightStrip.addSegment(new LightStripSegment( 33, 28, 1, bri)); // Box short side
-	lightStrip.addSegment(new LightStripSegment( 27,  9, 1, bri)); // Box long side
+
+	lightStrip.addSegment(new LightStripSegment(158, 75, 1, bri)); // Right side
+	lightStrip.addSegment(new LightStripSegment( 74, 69, 1, bri)); // Box short side
+	lightStrip.addSegment(new LightStripSegment( 68, 50, 1, bri)); // Box long side
+	lightStrip.addSegment(new LightStripSegment( 49,  9, 1, bri)); // Frontside
 //	lightStrip.addSegment(new LightStripSegment(  0, 11, 0, bri)); // Inside box (12 leds)
 	lightStrip.addSegment(new LightStripSegment( 12, 91, 0, bri)); // Back side
 	lightStrip.addSegment(new LightStripSegment( 91,149, 0, 255)); // Bar lower

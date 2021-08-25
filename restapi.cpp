@@ -18,6 +18,12 @@ RESTServer::RESTServer(LightStrip* lightStrip) : _lightStrip(lightStrip), _serve
 	Rest::Routes::Get(_router, "/index.html",		Rest::Routes::bind(&RESTServer::getStaticHTML, this));
 	Rest::Routes::Get(_router, "/",				Rest::Routes::bind(&RESTServer::getStaticHTML, this));
 	Rest::Routes::Get(_router, "/static/*",                 Rest::Routes::bind(&RESTServer::getStaticHTML, this));
+
+	Rest::Routes::Options(_router, "/api/*",                 Rest::Routes::bind(&RESTServer::preflight, this));
+	Rest::Routes::Options(_router, "/api/*/*",                 Rest::Routes::bind(&RESTServer::preflight, this));
+	Rest::Routes::Options(_router, "/api/*/*/*",                 Rest::Routes::bind(&RESTServer::preflight, this));
+	Rest::Routes::Options(_router, "/api/*/*/*/*",                 Rest::Routes::bind(&RESTServer::preflight, this));
+	Rest::Routes::Options(_router, "/api/*/*/*/*/*",                 Rest::Routes::bind(&RESTServer::preflight, this));
 }
 
 RESTServer::~RESTServer()
@@ -36,8 +42,17 @@ void RESTServer::start(int port)
 	_server->init(opts);
 	_server->setHandler(_router.handler());
 	_server->serveThreaded();
+	
+	
 }
 
+void RESTServer::preflight(const Rest::Request& request, Http::ResponseWriter response)
+{
+	std::cout << "CORS: " << request.resource() << std::endl;
+	response.headers().add<Http::Header::AccessControlAllowOrigin>("*");
+	response.headers().add<Http::Header::AccessControlAllowHeaders>("*");
+	response.send(Http::Code::Ok);
+}
 
 void RESTServer::getStaticHTML(const Rest::Request& request, Http::ResponseWriter response)
 {
@@ -50,6 +65,8 @@ void RESTServer::getStaticHTML(const Rest::Request& request, Http::ResponseWrite
 		Http::serveFile(response, _basePath + request.resource().substr(7));
 		return;
 	}
+	response.headers().add<Http::Header::AccessControlAllowOrigin>("*");
+	response.headers().add<Http::Header::AccessControlAllowHeaders>("*");
 	response.send(Http::Code::Not_Found);
 }
 
@@ -57,6 +74,8 @@ void RESTServer::incBeatCounter(const Rest::Request &request, Http::ResponseWrit
 {
 	(void) request;
 	std::string resp = "{ \"beat\": true; }\n";
+	response.headers().add<Http::Header::AccessControlAllowOrigin>("*");
+	response.headers().add<Http::Header::AccessControlAllowHeaders>("*");
 	response.send(Http::Code::Ok, resp);
 	_lightStrip->incBeatCounter();
 }
@@ -65,6 +84,8 @@ void RESTServer::setMode(const Rest::Request &request, Http::ResponseWriter resp
 {
 	std::string mode = request.param(":mode").as<std::string>();
 	std::string resp = mode + "\n";
+	response.headers().add<Http::Header::AccessControlAllowOrigin>("*");
+	response.headers().add<Http::Header::AccessControlAllowHeaders>("*");
 	response.send(Http::Code::Ok, resp);
 	_lightStrip->setMode(mode);
 }
@@ -72,6 +93,8 @@ void RESTServer::setMode(const Rest::Request &request, Http::ResponseWriter resp
 void RESTServer::getMode(const Rest::Request &request, Http::ResponseWriter response)
 {
 	(void) request;
+	response.headers().add<Http::Header::AccessControlAllowOrigin>("*");
+	response.headers().add<Http::Header::AccessControlAllowHeaders>("*");
 	response.send(Http::Code::Ok, "{ \"mode\": \""+_lightStrip->mode()+"\"}\n");
 }
 
@@ -85,6 +108,8 @@ void RESTServer::setBrightness(const Rest::Request& request, Http::ResponseWrite
 	if (bri>255) {
 		bri = 255;
 	}
+	response.headers().add<Http::Header::AccessControlAllowOrigin>("*");
+	response.headers().add<Http::Header::AccessControlAllowHeaders>("*");
 	response.send(Http::Code::Ok, resp);
 	/*
 	if (bri==0) {
@@ -102,6 +127,8 @@ void RESTServer::getBrightness(const Rest::Request& request, Http::ResponseWrite
 	int bri = (_lightStrip->brightness() * 100) / 255;
 
 	std::string resp = "{ \"bri\": " + std::to_string(bri) + " }\n";
+	response.headers().add<Http::Header::AccessControlAllowOrigin>("*");
+	response.headers().add<Http::Header::AccessControlAllowHeaders>("*");
 	response.send(Http::Code::Ok, resp);
 }
 
@@ -112,6 +139,8 @@ void RESTServer::setColor(const Rest::Request& request, Http::ResponseWriter res
 	int g = request.param(":g").as<int>();
 	int b = request.param(":b").as<int>();
 	std::string resp = "{ \"col:\": \"" + std::to_string(r) + "," + std::to_string(g) + "," + std::to_string(b) + "\" }\n";
+	response.headers().add<Http::Header::AccessControlAllowOrigin>("*");
+	response.headers().add<Http::Header::AccessControlAllowHeaders>("*");
 	response.send(Http::Code::Ok, resp);
 
 	_lightStrip->setMode("color");
@@ -132,5 +161,7 @@ void RESTServer::getColor(const Rest::Request& request, Http::ResponseWriter res
         uint8_t b = (color >>  0) & 0xff;
 
 	std::string resp = "{ \"col:\": \"" + std::to_string(r) + "," + std::to_string(g) + "," + std::to_string(b) + "\" }\n";
+	response.headers().add<Http::Header::AccessControlAllowOrigin>("*");
+	response.headers().add<Http::Header::AccessControlAllowHeaders>("*");
 	response.send(Http::Code::Ok, resp);
 }
