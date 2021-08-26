@@ -111,14 +111,11 @@ void RESTServer::setBrightness(const Rest::Request& request, Http::ResponseWrite
 	response.headers().add<Http::Header::AccessControlAllowOrigin>("*");
 	response.headers().add<Http::Header::AccessControlAllowHeaders>("*");
 	response.send(Http::Code::Ok, resp);
-	/*
+
+	_lightStrip->setBrightness(bri);
 	if (bri==0) {
 		_lightStrip->setMode("off");
-	} else {
-		_lightStrip->setMode("color");
 	}
-	*/
-	_lightStrip->setBrightness(bri);
 }
 
 void RESTServer::getBrightness(const Rest::Request& request, Http::ResponseWriter response)
